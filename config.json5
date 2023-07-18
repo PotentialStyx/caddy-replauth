@@ -1,0 +1,63 @@
+{
+	apps: {
+		http: {
+			servers: {
+				server: {
+					listen: [":2080"],
+					routes: [
+						{
+							handle: [
+								{
+									handler: "replauth",
+									hosts: [
+										/*
+                                            The external domain of your project here, for example
+                                            if your project is reachable at https://example.com
+                                            you would add the entry "example.com".
+
+                                            This should be added for every domain your site is
+                                            reachable at. In the future, this will support glob
+                                            patterns.
+
+                                            These values are used to verify that the repl auth JWT
+                                            is meant for your site and wasn't created for a different
+                                            one.
+                                        */
+									],
+									/*
+                                        **THIS IS A DANGEREOUS VALUE TO SET TO true**
+
+                                        If set to true, this will not verify the host claim of the
+                                        JWT. If the host claim is not verified, then an attacker 
+                                        could potentially impersonate a victim if the victim ever
+                                        used repl auth on a site the attacker owns.
+
+                                        If set to true, the hosts array can be left blank as it will
+                                        be ignored.
+                                    */
+									ignoreHost: false,
+									/*
+                                        If true, all users will be forced to authenticate via repl
+                                        auth before they can visit your site at all. This is the same
+                                        as using the prebuild login page 
+                                        (https://docs.replit.com/hosting/repl-auth-sidebar#using-a-prebuilt-login-page-the-easy-way)
+                                        in a repl. It even uses the same page.
+                                    */
+									forceAuth: true,
+								},
+								{
+									handler: "reverse_proxy",
+									upstreams: [
+										{
+											dial: "localhost:9000",
+										},
+									],
+								},
+							],
+						},
+					],
+				},
+			},
+		},
+	},
+}
